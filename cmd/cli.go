@@ -48,12 +48,14 @@ Komutlar:
   scan          - Ağdaki tüm cihazları tara
   ports <IP>    - Belirli IP adresinde açık portları tara
   list          - Bulunmuş tüm servisleri listele
+  demo          - Demo modunu çalıştır (örnek sonuçları göster)
   help          - Bu yardım mesajını göster
 
 Örnekler:
   localla scan              # Tüm ağı tara
   localla ports 192.168.1.1 # Belirli cihazı tara
   localla list              # Bulunan servisleri listele
+  localla demo              # Demo modunu göster
 `
 	fmt.Println(help)
 }
@@ -471,4 +473,68 @@ func saveResults(result ScanResult) {
 	if err != nil {
 		fmt.Printf("❌ Dosya yazılırken hata: %v\n", err)
 	}
+}
+
+func DemoMode() {
+	fmt.Println("🎮 DEMO MODU - Örnek Sonuçlar")
+	fmt.Println("==================================================")
+	fmt.Println()
+
+	// Demo sonuçları oluştur
+	demoDevices := []Device{
+		{IP: "192.168.1.1", MAC: "00:1a:2b:3c:4d:5e", Ports: []int{80, 443, 8080}},
+		{IP: "192.168.1.10", MAC: "aa:bb:cc:dd:ee:ff", Ports: []int{80, 3000}},
+		{IP: "192.168.1.20", MAC: "11:22:33:44:55:66", Ports: []int{443, 8443}},
+		{IP: "192.168.1.30", MAC: "de:ad:be:ef:ca:fe", Ports: []int{22, 80}},
+	}
+
+	demoServices := []Service{
+		{IP: "192.168.1.1", Port: 80, Protocol: "http", Title: "MikroTik RouterOS"},
+		{IP: "192.168.1.1", Port: 443, Protocol: "https", Title: "MikroTik RouterOS"},
+		{IP: "192.168.1.10", Port: 80, Protocol: "http", Title: "Apache Web Server"},
+		{IP: "192.168.1.10", Port: 3000, Protocol: "http", Title: "Node.js Application"},
+		{IP: "192.168.1.20", Port: 443, Protocol: "https", Title: "Nginx Server"},
+		{IP: "192.168.1.30", Port: 80, Protocol: "http", Title: "OpenWRT Dashboard"},
+	}
+
+	result := ScanResult{
+		Timestamp: time.Now().Format(time.RFC3339),
+		Devices:   demoDevices,
+		Services:  demoServices,
+	}
+
+	// Sonuçları göster
+	fmt.Println("📋 DEMO - Bulunan Cihazlar:")
+	fmt.Println()
+
+	for _, device := range demoDevices {
+		fmt.Printf("📱 %s", device.IP)
+		if device.MAC != "" {
+			fmt.Printf(" (%s)", device.MAC)
+		}
+		fmt.Println()
+
+		// Bu IP'e ait servisleri göster
+		for _, svc := range demoServices {
+			if svc.IP == device.IP {
+				fmt.Printf("   🌐 %s://%s:%d", svc.Protocol, svc.IP, svc.Port)
+				if svc.Title != "" {
+					fmt.Printf(" - %s", svc.Title)
+				}
+				fmt.Println()
+			}
+		}
+		fmt.Println()
+	}
+
+	// JSON çıktısını göster
+	fmt.Println("📄 JSON Formatında Çıktı:")
+	fmt.Println("==================================================")
+	jsonData, _ := json.MarshalIndent(result, "", "  ")
+	fmt.Println(string(jsonData))
+	fmt.Println()
+
+	// Dosyaya kaydet
+	saveResults(result)
+	fmt.Println("💾 Demo sonuçları .localla_services.json dosyasına kaydedildi")
 }

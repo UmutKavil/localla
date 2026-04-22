@@ -26,6 +26,8 @@ func main() {
 		cmd.ScanPorts(os.Args[2])
 	case "list":
 		cmd.ListServices()
+	case "demo":
+		cmd.DemoMode()
 	case "help":
 		cmd.PrintHelp()
 	default:
