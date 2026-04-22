@@ -1,0 +1,33 @@
+{
+  "aws": {
+    "enabled": true,
+    "region": "eu-west-1",
+    "credentials": {
+      "access_key": "YOUR_AWS_ACCESS_KEY",
+      "secret_key": "YOUR_AWS_SECRET_KEY"
+    }
+  },
+  "azure": {
+    "enabled": true,
+    "subscription_id": "YOUR_SUBSCRIPTION_ID",
+    "credentials": {
+      "tenant_id": "YOUR_TENANT_ID",
+      "client_id": "YOUR_CLIENT_ID",
+      "client_secret": "YOUR_CLIENT_SECRET"
+    }
+  },
+  "kubernetes": {
+    "enabled": true,
+    "cluster_name": "default",
+    "kubeconfig_path": "~/.kube/config"
+  },
+  "docker": {
+    "enabled": true,
+    "socket": "/var/run/docker.sock"
+  },
+  "microservices": {
+    "enabled": true,
+    "discovery_type": "consul",
+    "discovery_url": "http://localhost:8500"
+  }
+}

@@ -1,0 +1,285 @@
+{
+  "timestamp": "2026-04-22T18:31:33+03:00",
+  "provider": "all",
+  "resources": [
+    {
+      "id": "i-0123456789abcdef0",
+      "name": "web-server-prod",
+      "provider": "AWS",
+      "type": "EC2 Instance",
+      "region": "eu-west-1",
+      "status": "running",
+      "ip": "",
+      "private_ip": "10.0.1.15",
+      "public_ip": "54.123.45.67",
+      "port": 80,
+      "services": [
+        "nginx",
+        "nodejs"
+      ],
+      "tags": {
+        "Environment": "production",
+        "Team": "backend"
+      },
+      "last_checked": "2026-04-22T18:31:33.787676+03:00"
+    },
+    {
+      "id": "i-0987654321fedcba0",
+      "name": "db-server-prod",
+      "provider": "AWS",
+      "type": "EC2 Instance",
+      "region": "eu-west-1",
+      "status": "running",
+      "ip": "",
+      "private_ip": "10.0.2.30",
+      "public_ip": "54.234.56.78",
+      "port": 5432,
+      "services": [
+        "postgresql"
+      ],
+      "tags": {
+        "Environment": "production",
+        "Team": "data"
+      },
+      "last_checked": "2026-04-22T18:31:33.787676+03:00"
+    },
+    {
+      "id": "i-1111111111111111a",
+      "name": "api-server-staging",
+      "provider": "AWS",
+      "type": "EC2 Instance",
+      "region": "eu-west-1",
+      "status": "stopped",
+      "ip": "",
+      "private_ip": "10.0.3.45",
+      "public_ip": "",
+      "port": 0,
+      "services": null,
+      "tags": {
+        "Environment": "staging"
+      },
+      "last_checked": "2026-04-22T18:31:33.787676+03:00"
+    },
+    {
+      "id": "vm-001",
+      "name": "prod-app-vm",
+      "provider": "Azure",
+      "type": "Virtual Machine",
+      "region": "West Europe",
+      "status": "running",
+      "ip": "",
+      "private_ip": "10.1.1.10",
+      "public_ip": "40.123.45.67",
+      "port": 8080,
+      "services": [
+        "docker",
+        "kubernetes"
+      ],
+      "tags": {
+        "Environment": "production"
+      },
+      "last_checked": "2026-04-22T18:31:33.787681+03:00"
+    },
+    {
+      "id": "vm-002",
+      "name": "cache-server",
+      "provider": "Azure",
+      "type": "Virtual Machine",
+      "region": "West Europe",
+      "status": "running",
+      "ip": "",
+      "private_ip": "10.1.2.20",
+      "public_ip": "",
+      "port": 6379,
+      "services": [
+        "redis"
+      ],
+      "tags": null,
+      "last_checked": "2026-04-22T18:31:33.787681+03:00"
+    },
+    {
+      "id": "pod-nginx-12345",
+      "name": "nginx-deployment-abc123",
+      "provider": "Kubernetes",
+      "type": "Pod",
+      "region": "default",
+      "status": "running",
+      "ip": "10.244.0.5",
+      "private_ip": "",
+      "public_ip": "",
+      "port": 80,
+      "services": [
+        "nginx"
+      ],
+      "tags": {
+        "app": "web",
+        "namespace": "production"
+      },
+      "last_checked": "2026-04-22T18:31:33.787684+03:00"
+    },
+    {
+      "id": "pod-api-67890",
+      "name": "api-service-xyz789",
+      "provider": "Kubernetes",
+      "type": "Pod",
+      "region": "default",
+      "status": "running",
+      "ip": "10.244.1.10",
+      "private_ip": "",
+      "public_ip": "",
+      "port": 3000,
+      "services": [
+        "nodejs",
+        "express"
+      ],
+      "tags": {
+        "app": "api",
+        "namespace": "production"
+      },
+      "last_checked": "2026-04-22T18:31:33.787684+03:00"
+    },
+    {
+      "id": "pod-db-11111",
+      "name": "postgres-statefulset-0",
+      "provider": "Kubernetes",
+      "type": "Pod",
+      "region": "default",
+      "status": "running",
+      "ip": "10.244.2.15",
+      "private_ip": "",
+      "public_ip": "",
+      "port": 5432,
+      "services": [
+        "postgresql"
+      ],
+      "tags": {
+        "app": "database",
+        "namespace": "production"
+      },
+      "last_checked": "2026-04-22T18:31:33.787684+03:00"
+    },
+    {
+      "id": "a1b2c3d4e5f6",
+      "name": "web-app",
+      "provider": "Docker",
+      "type": "Container",
+      "region": "local",
+      "status": "running",
+      "ip": "172.17.0.2",
+      "private_ip": "",
+      "public_ip": "",
+      "port": 8080,
+      "services": [
+        "nginx"
+      ],
+      "tags": {
+        "compose_service": "web"
+      },
+      "last_checked": "2026-04-22T18:31:33.787688+03:00"
+    },
+    {
+      "id": "f6e5d4c3b2a1",
+      "name": "api-service",
+      "provider": "Docker",
+      "type": "Container",
+      "region": "local",
+      "status": "running",
+      "ip": "172.17.0.3",
+      "private_ip": "",
+      "public_ip": "",
+      "port": 3000,
+      "services": [
+        "nodejs"
+      ],
+      "tags": {
+        "compose_service": "api"
+      },
+      "last_checked": "2026-04-22T18:31:33.787688+03:00"
+    },
+    {
+      "id": "c3b2a1f6e5d4",
+      "name": "database",
+      "provider": "Docker",
+      "type": "Container",
+      "region": "local",
+      "status": "running",
+      "ip": "172.17.0.4",
+      "private_ip": "",
+      "public_ip": "",
+      "port": 5432,
+      "services": [
+        "postgresql"
+      ],
+      "tags": null,
+      "last_checked": "2026-04-22T18:31:33.787689+03:00"
+    },
+    {
+      "id": "svc-auth-001",
+      "name": "auth-service",
+      "provider": "Microservices",
+      "type": "Service",
+      "region": "us-east-1",
+      "status": "running",
+      "ip": "192.168.1.100",
+      "private_ip": "",
+      "public_ip": "",
+      "port": 4000,
+      "services": [
+        "jwt",
+        "oauth"
+      ],
+      "tags": {
+        "language": "go",
+        "version": "v2.1.0"
+      },
+      "last_checked": "2026-04-22T18:31:33.787692+03:00"
+    },
+    {
+      "id": "svc-payment-001",
+      "name": "payment-service",
+      "provider": "Microservices",
+      "type": "Service",
+      "region": "us-east-1",
+      "status": "running",
+      "ip": "192.168.1.101",
+      "private_ip": "",
+      "public_ip": "",
+      "port": 4001,
+      "services": [
+        "stripe",
+        "paypal"
+      ],
+      "tags": {
+        "language": "python",
+        "version": "v1.5.0"
+      },
+      "last_checked": "2026-04-22T18:31:33.787692+03:00"
+    },
+    {
+      "id": "svc-notification-001",
+      "name": "notification-service",
+      "provider": "Microservices",
+      "type": "Service",
+      "region": "us-east-1",
+      "status": "running",
+      "ip": "192.168.1.102",
+      "private_ip": "",
+      "public_ip": "",
+      "port": 4002,
+      "services": [
+        "email",
+        "sms"
+      ],
+      "tags": {
+        "language": "nodejs",
+        "version": "v3.0.0"
+      },
+      "last_checked": "2026-04-22T18:31:33.787692+03:00"
+    }
+  ],
+  "summary": {
+    "running": 13,
+    "stopped": 1,
+    "total": 14
+  }
+}

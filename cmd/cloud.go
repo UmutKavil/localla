@@ -458,3 +458,164 @@ func CloudList() {
 
 	displayCloudResults(result)
 }
+
+type CloudConfig struct {
+	AWS           map[string]interface{} `json:"aws"`
+	Azure         map[string]interface{} `json:"azure"`
+	Kubernetes    map[string]interface{} `json:"kubernetes"`
+	Docker        map[string]interface{} `json:"docker"`
+	Microservices map[string]interface{} `json:"microservices"`
+}
+
+func CloudScanAll() {
+	fmt.Println("☁️  TÜM BULUT KAYNAKLARI TARANYOR...")
+	fmt.Println("==================================================")
+	fmt.Println()
+
+	// Config'i oku
+	configData, err := ioutil.ReadFile(".localla_cloud_config.json")
+	if err != nil {
+		fmt.Println("⚠️  Config dosyası bulunamadı!")
+		fmt.Println("Lütfen .localla_cloud_config.json dosyasını düzenleyin.")
+		fmt.Println("Credentials'ı ekleyin ve 'enabled' = true yapın.")
+		return
+	}
+
+	var config CloudConfig
+	if err := json.Unmarshal(configData, &config); err != nil {
+		fmt.Printf("❌ Config hatası: %v\n", err)
+		return
+	}
+
+	// Tüm sonuçları birleştir
+	allResources := []CloudResource{}
+	allSummary := make(map[string]int)
+	allSummary["total"] = 0
+	allSummary["running"] = 0
+	allSummary["stopped"] = 0
+
+	providers := []string{"aws", "azure", "kubernetes", "docker", "microservices"}
+
+	for _, provider := range providers {
+		fmt.Printf("🔄 %s taranıyor...\n", provider)
+
+		resources := getProviderResources(provider)
+		if len(resources) > 0 {
+			fmt.Printf("   ✅ %d kaynak bulundu\n", len(resources))
+			allResources = append(allResources, resources...)
+
+			allSummary["total"] += len(resources)
+			allSummary["running"] += countByStatus(resources, "running")
+			allSummary["stopped"] += countByStatus(resources, "stopped")
+		} else {
+			fmt.Printf("   ⏭️  Kaynak bulunamadı\n")
+		}
+	}
+
+	fmt.Println()
+
+	if len(allResources) == 0 {
+		fmt.Println("❌ Hiç kaynak bulunamadı!")
+		fmt.Println("Config dosyasını kontrol edin ve credentials ekleyin.")
+		return
+	}
+
+	// Tüm sonuçları göster
+	fmt.Printf("✅ TOPLAM %d KAYNAK BULUNDU:\n\n", len(allResources))
+	displayAllCloudResources(allResources)
+
+	// Özet
+	fmt.Printf("\n📊 GENEL ÖZET:\n")
+	fmt.Printf("   Toplam Kaynaklar: %d\n", allSummary["total"])
+	fmt.Printf("   Çalışan: %d\n", allSummary["running"])
+	fmt.Printf("   Durdurulmuş: %d\n\n", allSummary["stopped"])
+
+	// JSON'a kaydet
+	savedResult := CloudScanResult{
+		Timestamp: time.Now().Format(time.RFC3339),
+		Provider:  "all",
+		Resources: allResources,
+		Summary:   allSummary,
+	}
+
+	data, _ := json.MarshalIndent(savedResult, "", "  ")
+	ioutil.WriteFile(".localla_cloud_all.json", data, 0644)
+	fmt.Println("💾 Sonuçlar .localla_cloud_all.json dosyasına kaydedildi")
+}
+
+func getProviderResources(provider string) []CloudResource {
+	switch provider {
+	case "aws":
+		return scanAWS()
+	case "azure":
+		return scanAzure()
+	case "kubernetes":
+		return scanKubernetes()
+	case "docker":
+		return scanDocker()
+	case "microservices":
+		return scanMicroservices()
+	default:
+		return []CloudResource{}
+	}
+}
+
+func displayAllCloudResources(resources []CloudResource) {
+	// Sağlayıcıya göre grupla
+	providers := make(map[string][]CloudResource)
+
+	for _, res := range resources {
+		providers[res.Provider] = append(providers[res.Provider], res)
+	}
+
+	// Sırayla göster
+	providerOrder := []string{"AWS", "Azure", "Kubernetes", "Docker", "Microservices"}
+
+	for _, providerName := range providerOrder {
+		items := providers[providerName]
+		if len(items) == 0 {
+			continue
+		}
+
+		fmt.Printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+		fmt.Printf("%-15s [%d Kaynak]\n", providerName, len(items))
+		fmt.Printf("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
+
+		for _, res := range items {
+			statusEmoji := "🟢"
+			if res.Status == "stopped" {
+				statusEmoji = "🔴"
+			}
+
+			fmt.Printf("%s %s\n", statusEmoji, res.Name)
+			fmt.Printf("   ID: %s\n", res.ID)
+			fmt.Printf("   Tür: %s\n", res.Type)
+
+			if res.Region != "" {
+				fmt.Printf("   Region: %s\n", res.Region)
+			}
+
+			if res.PublicIP != "" {
+				fmt.Printf("   🌐 Genel IP: %s\n", res.PublicIP)
+			}
+
+			if res.PrivateIP != "" {
+				fmt.Printf("   🔒 Özel IP: %s\n", res.PrivateIP)
+			}
+
+			if res.IP != "" {
+				fmt.Printf("   📍 IP: %s\n", res.IP)
+			}
+
+			if res.Port > 0 {
+				fmt.Printf("   🔌 Port: %d\n", res.Port)
+			}
+
+			if len(res.Services) > 0 {
+				fmt.Printf("   ⚙️  Servisler: %v\n", res.Services)
+			}
+
+			fmt.Println()
+		}
+	}
+}

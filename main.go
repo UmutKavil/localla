@@ -34,9 +34,12 @@ func main() {
 		if len(os.Args) < 3 {
 			fmt.Println("Kullanım: localla cloud <provider>")
 			fmt.Println("Sağlayıcılar: aws, azure, kubernetes, docker, microservices")
+			fmt.Println("Tüm sağlayıcıları taramak için: localla cloud-scan-all")
 			return
 		}
 		cmd.CloudScan(os.Args[2])
+	case "cloud-scan-all":
+		cmd.CloudScanAll()
 	case "cloud-list":
 		cmd.CloudList()
 	case "demo":

@@ -1,67 +1,70 @@
 {
-  "timestamp": "2026-04-22T18:25:21+03:00",
-  "provider": "docker",
+  "timestamp": "2026-04-22T18:28:17+03:00",
+  "provider": "aws",
   "resources": [
     {
-      "id": "a1b2c3d4e5f6",
-      "name": "web-app",
-      "provider": "Docker",
-      "type": "Container",
-      "region": "local",
+      "id": "i-0123456789abcdef0",
+      "name": "web-server-prod",
+      "provider": "AWS",
+      "type": "EC2 Instance",
+      "region": "eu-west-1",
       "status": "running",
-      "ip": "172.17.0.2",
-      "private_ip": "",
-      "public_ip": "",
-      "port": 8080,
+      "ip": "",
+      "private_ip": "10.0.1.15",
+      "public_ip": "54.123.45.67",
+      "port": 80,
       "services": [
-        "nginx"
-      ],
-      "tags": {
-        "compose_service": "web"
-      },
-      "last_checked": "2026-04-22T18:25:21.05803+03:00"
-    },
-    {
-      "id": "f6e5d4c3b2a1",
-      "name": "api-service",
-      "provider": "Docker",
-      "type": "Container",
-      "region": "local",
-      "status": "running",
-      "ip": "172.17.0.3",
-      "private_ip": "",
-      "public_ip": "",
-      "port": 3000,
-      "services": [
+        "nginx",
         "nodejs"
       ],
       "tags": {
-        "compose_service": "api"
+        "Environment": "production",
+        "Team": "backend"
       },
-      "last_checked": "2026-04-22T18:25:21.05803+03:00"
+      "last_checked": "2026-04-22T18:28:17.482646+03:00"
     },
     {
-      "id": "c3b2a1f6e5d4",
-      "name": "database",
-      "provider": "Docker",
-      "type": "Container",
-      "region": "local",
+      "id": "i-0987654321fedcba0",
+      "name": "db-server-prod",
+      "provider": "AWS",
+      "type": "EC2 Instance",
+      "region": "eu-west-1",
       "status": "running",
-      "ip": "172.17.0.4",
-      "private_ip": "",
-      "public_ip": "",
+      "ip": "",
+      "private_ip": "10.0.2.30",
+      "public_ip": "54.234.56.78",
       "port": 5432,
       "services": [
         "postgresql"
       ],
-      "tags": null,
-      "last_checked": "2026-04-22T18:25:21.05803+03:00"
+      "tags": {
+        "Environment": "production",
+        "Team": "data"
+      },
+      "last_checked": "2026-04-22T18:28:17.482646+03:00"
+    },
+    {
+      "id": "i-1111111111111111a",
+      "name": "api-server-staging",
+      "provider": "AWS",
+      "type": "EC2 Instance",
+      "region": "eu-west-1",
+      "status": "stopped",
+      "ip": "",
+      "private_ip": "10.0.3.45",
+      "public_ip": "",
+      "port": 0,
+      "services": null,
+      "tags": {
+        "Environment": "staging"
+      },
+      "last_checked": "2026-04-22T18:28:17.482646+03:00"
     }
   ],
   "summary": {
-    "running": 3,
+    "running": 2,
     "services": 3,
-    "stopped": 0,
+    "stopped": 1,
     "total": 3
   }
 }

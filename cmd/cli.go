@@ -53,8 +53,9 @@ Kullanım:
   compare       - IP değişikliklerini ve cihaz değişimlerini göster
 
 ☁️  CLOUD (Bulut Kaynakları):
-  cloud <provider>   - Bulut kaynaklarını tara
-  cloud-list         - Kaydedilen bulut kaynaklarını listele
+  cloud <provider>       - Belirli sağlayıcıyı tara
+  cloud-scan-all         - TÜM sağlayıcıları tarar ⭐
+  cloud-list             - Kaydedilen bulut kaynaklarını listele
   
   Desteklenen sağlayıcılar:
     • aws            - Amazon Web Services (EC2)
@@ -82,6 +83,7 @@ Kullanım:
     localla cloud docker            # Docker container'larını tara
     localla cloud azure             # Azure VM'lerini tara
     localla cloud microservices     # Microservices'i tara
+    localla cloud-scan-all          # TÜM BULUT KAYNAKLARINI TAR ⭐
     localla cloud-list              # Bulut kaynaklarını listele
 `
 	fmt.Println(help)
