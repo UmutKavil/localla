@@ -26,6 +26,10 @@ func main() {
 		cmd.ScanPorts(os.Args[2])
 	case "list":
 		cmd.ListServices()
+	case "history":
+		cmd.ShowHistory()
+	case "compare":
+		cmd.CompareScans()
 	case "demo":
 		cmd.DemoMode()
 	case "help":

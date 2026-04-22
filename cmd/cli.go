@@ -14,6 +14,7 @@ import (
 
 const (
 	storageFile = ".localla_services.json"
+	historyFile = ".localla_history.json"
 	httpTimeout = 3 * time.Second
 	commonPorts = "80,443,8000,8080,8443,3000,5000,9000"
 )
@@ -48,6 +49,8 @@ Komutlar:
   scan          - Ağdaki tüm cihazları tara
   ports <IP>    - Belirli IP adresinde açık portları tara
   list          - Bulunmuş tüm servisleri listele
+  history       - Tüm tarama geçmişini göster
+  compare       - IP değişikliklerini ve cihaz değişimlerini göster
   demo          - Demo modunu çalıştır (örnek sonuçları göster)
   help          - Bu yardım mesajını göster
 
@@ -55,6 +58,8 @@ Komutlar:
   localla scan              # Tüm ağı tara
   localla ports 192.168.1.1 # Belirli cihazı tara
   localla list              # Bulunan servisleri listele
+  localla history           # Tarama geçmişini göster
+  localla compare           # IP değişikliklerini göster
   localla demo              # Demo modunu göster
 `
 	fmt.Println(help)
@@ -537,4 +542,213 @@ func DemoMode() {
 	// Dosyaya kaydet
 	saveResults(result)
 	fmt.Println("💾 Demo sonuçları .localla_services.json dosyasına kaydedildi")
+}
+
+func ShowHistory() {
+	fmt.Println("📜 Tarama Geçmişi")
+	fmt.Println("==================================================")
+
+	// Şimdiki sonuçları oku
+	data, err := ioutil.ReadFile(storageFile)
+	if err != nil {
+		fmt.Println("⚠️  Tarama geçmişi bulunamadı. Önce 'scan' komutunu çalıştırın.")
+		return
+	}
+
+	var result ScanResult
+	if err := json.Unmarshal(data, &result); err != nil {
+		fmt.Printf("❌ Hata: %v\n", err)
+		return
+	}
+
+	fmt.Printf("📅 Tarama Tarihi: %s\n", result.Timestamp)
+	fmt.Printf("📊 Toplam Cihaz: %d\n", len(result.Devices))
+	fmt.Printf("🌐 Toplam Servis: %d\n\n", len(result.Services))
+
+	fmt.Println("📱 Cihazlar:")
+	for _, device := range result.Devices {
+		fmt.Printf("  • %s", device.IP)
+		if device.MAC != "" {
+			fmt.Printf(" (MAC: %s)", device.MAC)
+		}
+		fmt.Printf(" - %d açık port\n", len(device.Ports))
+	}
+
+	fmt.Println("\n🌐 Servisler:")
+	for _, svc := range result.Services {
+		fmt.Printf("  • %s://%s:%d", svc.Protocol, svc.IP, svc.Port)
+		if svc.Title != "" {
+			fmt.Printf(" - %s", svc.Title)
+		}
+		fmt.Println()
+	}
+}
+
+type DeviceChange struct {
+	Status   string // "new", "removed", "ip_changed", "unchanged"
+	IP       string
+	OldIP    string
+	MAC      string
+	Details  string
+}
+
+func CompareScans() {
+	fmt.Println("🔄 Ağ Değişim Raporu")
+	fmt.Println("==================================================")
+	fmt.Println()
+
+	// Şimdiki sonuçları oku
+	currentData, err := ioutil.ReadFile(storageFile)
+	if err != nil {
+		fmt.Println("⚠️  Karşılaştırmak için iki tarama gerekli.")
+		fmt.Println("İlk olarak 'localla scan' çalıştırın, sonra tekrar çalıştırın.")
+		return
+	}
+
+	var currentResult ScanResult
+	if err := json.Unmarshal(currentData, &currentResult); err != nil {
+		fmt.Printf("❌ Hata: %v\n", err)
+		return
+	}
+
+	// Yedek dosyasını oku (varsa)
+	backupData, err := ioutil.ReadFile(storageFile + ".bak")
+	if err != nil {
+		fmt.Println("⚠️  Önceki tarama bulunamadı. Şimdiki taramayı yedekle.")
+		saveBackup(currentData)
+		return
+	}
+
+	var prevResult ScanResult
+	if err := json.Unmarshal(backupData, &prevResult); err != nil {
+		fmt.Printf("❌ Hata: %v\n", err)
+		return
+	}
+
+	// Karşılaştır
+	changes := compareScanResults(prevResult, currentResult)
+
+	if len(changes) == 0 {
+		fmt.Println("✅ Ağda değişiklik yok!")
+		fmt.Println("Tüm cihazlar aynı IP'ye ve MAC'a sahip.")
+		return
+	}
+
+	// Değişiklikleri kategoriye göre göster
+	newDevices := filterChanges(changes, "new")
+	removedDevices := filterChanges(changes, "removed")
+	ipChanged := filterChanges(changes, "ip_changed")
+
+	if len(newDevices) > 0 {
+		fmt.Println("🆕 YENİ CİHAZLAR:")
+		for _, change := range newDevices {
+			fmt.Printf("  ➕ %s (MAC: %s)\n", change.IP, change.MAC)
+		}
+		fmt.Println()
+	}
+
+	if len(removedDevices) > 0 {
+		fmt.Println("❌ KALDIRILAN CİHAZLAR:")
+		for _, change := range removedDevices {
+			fmt.Printf("  ➖ %s (MAC: %s) - Ağdan ayrıldı\n", change.IP, change.MAC)
+		}
+		fmt.Println()
+	}
+
+	if len(ipChanged) > 0 {
+		fmt.Println("🔄 IP DEĞİŞEN CİHAZLAR (DHCP):")
+		for _, change := range ipChanged {
+			fmt.Printf("  🔁 MAC: %s\n", change.MAC)
+			fmt.Printf("     Eski IP: %s\n", change.OldIP)
+			fmt.Printf("     Yeni IP: %s\n", change.IP)
+		}
+		fmt.Println()
+	}
+
+	fmt.Printf("📊 Özet: +%d yeni | -%d kaldırılan | 🔄 %d IP değişen\n",
+		len(newDevices), len(removedDevices), len(ipChanged))
+
+	// Yedekle
+	saveBackup(currentData)
+	fmt.Println("\n💾 Sonuçlar yedeklendi")
+}
+
+func compareScanResults(prev, curr ScanResult) []DeviceChange {
+	var changes []DeviceChange
+
+	// Map'leri oluştur: MAC -> Device
+	prevByMAC := make(map[string]Device)
+	currByMAC := make(map[string]Device)
+
+	for _, d := range prev.Devices {
+		if d.MAC != "" {
+			prevByMAC[d.MAC] = d
+		}
+	}
+	for _, d := range curr.Devices {
+		if d.MAC != "" {
+			currByMAC[d.MAC] = d
+		}
+	}
+
+	// Önceki cihazları kontrol et
+	for mac, prevDev := range prevByMAC {
+		if currDev, exists := currByMAC[mac]; exists {
+			// MAC aynı, IP farklı?
+			if prevDev.IP != currDev.IP {
+				changes = append(changes, DeviceChange{
+					Status:  "ip_changed",
+					MAC:     mac,
+					OldIP:   prevDev.IP,
+					IP:      currDev.IP,
+					Details: "DHCP tarafından yeni IP atandı",
+				})
+			} else {
+				changes = append(changes, DeviceChange{
+					Status:  "unchanged",
+					MAC:     mac,
+					IP:      currDev.IP,
+					Details: "Değişim yok",
+				})
+			}
+		} else {
+			// MAC kaldırıldı
+			changes = append(changes, DeviceChange{
+				Status:  "removed",
+				MAC:     mac,
+				IP:      prevDev.IP,
+				Details: "Ağdan ayrıldı",
+			})
+		}
+	}
+
+	// Yeni cihazları kontrol et
+	for mac, currDev := range currByMAC {
+		if _, exists := prevByMAC[mac]; !exists {
+			// Yeni MAC
+			changes = append(changes, DeviceChange{
+				Status:  "new",
+				MAC:     mac,
+				IP:      currDev.IP,
+				Details: "Yeni cihaz ağa katıldı",
+			})
+		}
+	}
+
+	return changes
+}
+
+func filterChanges(changes []DeviceChange, status string) []DeviceChange {
+	var result []DeviceChange
+	for _, c := range changes {
+		if c.Status == status {
+			result = append(result, c)
+		}
+	}
+	return result
+}
+
+func saveBackup(data []byte) {
+	backupPath := storageFile + ".bak"
+	ioutil.WriteFile(backupPath, data, 0644)
 }
