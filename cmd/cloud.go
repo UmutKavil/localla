@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"strings"
 	"time"
 )
 
@@ -618,4 +619,206 @@ func displayAllCloudResources(resources []CloudResource) {
 			fmt.Println()
 		}
 	}
+}
+
+func CloudScanAllVerbose() {
+	fmt.Println()
+	fmt.Println("╔══════════════════════════════════════════════════════════════════╗")
+	fmt.Println("║          ☁️  BULUT KAYNAKLARI - DETAYLI RAPOR  ☁️               ║")
+	fmt.Println("╚══════════════════════════════════════════════════════════════════╝")
+	fmt.Println()
+
+	// Config'i oku
+	configData, err := ioutil.ReadFile(".localla_cloud_config.json")
+	if err != nil {
+		fmt.Println("⚠️  Config dosyası bulunamadı!")
+		fmt.Println("Lütfen .localla_cloud_config.json dosyasını düzenleyin.")
+		return
+	}
+
+	var config CloudConfig
+	if err := json.Unmarshal(configData, &config); err != nil {
+		fmt.Printf("❌ Config hatası: %v\n", err)
+		return
+	}
+
+	// Tüm sonuçları birleştir
+	allResources := []CloudResource{}
+
+	providers := []string{"aws", "azure", "kubernetes", "docker", "microservices"}
+
+	fmt.Println("🔄 Tüm bulut kaynakları taranıyor...")
+	fmt.Println()
+
+	for _, provider := range providers {
+		resources := getProviderResources(provider)
+		if len(resources) > 0 {
+			allResources = append(allResources, resources...)
+		}
+	}
+
+	if len(allResources) == 0 {
+		fmt.Println("❌ Hiç kaynak bulunamadı!")
+		return
+	}
+
+	// Sağlayıcıya göre grupla
+	providers_map := make(map[string][]CloudResource)
+	for _, res := range allResources {
+		providers_map[res.Provider] = append(providers_map[res.Provider], res)
+	}
+
+	// Sırayla detaylı göster
+	providerOrder := []string{"AWS", "Azure", "Kubernetes", "Docker", "Microservices"}
+	providerEmojis := map[string]string{
+		"AWS":          "🟨",
+		"Azure":        "🔵",
+		"Kubernetes":   "☸️",
+		"Docker":       "🐋",
+		"Microservices": "⚡",
+	}
+
+	totalResources := 0
+
+	for _, providerName := range providerOrder {
+		items := providers_map[providerName]
+		if len(items) == 0 {
+			continue
+		}
+
+		emoji := providerEmojis[providerName]
+		totalResources += len(items)
+
+		fmt.Println()
+		fmt.Printf("┌─────────────────────────────────────────────────────────────────┐\n")
+		fmt.Printf("│ %s  %s (%d Kaynak)\n", emoji, providerName, len(items))
+		fmt.Printf("└─────────────────────────────────────────────────────────────────┘\n")
+		fmt.Println()
+
+		for i, res := range items {
+			statusEmoji := "🟢"
+			if res.Status == "stopped" {
+				statusEmoji = "🔴"
+			}
+
+			fmt.Printf("[%d] %s %s\n", i+1, statusEmoji, res.Name)
+			fmt.Println("    " + strings.Repeat("─", 60))
+
+			// ID
+			fmt.Printf("    🔹 ID                : %s\n", res.ID)
+
+			// Name
+			if res.Name != "" {
+				fmt.Printf("    🔹 Ad                : %s\n", res.Name)
+			}
+
+			// Type
+			if res.Type != "" {
+				fmt.Printf("    🔹 Tür               : %s\n", res.Type)
+			}
+
+			// Status
+			fmt.Printf("    🔹 Durum             : %s\n", res.Status)
+
+			// Region
+			if res.Region != "" {
+				fmt.Printf("    🔹 Region            : %s\n", res.Region)
+			}
+
+			// Public IP
+			if res.PublicIP != "" {
+				fmt.Printf("    🔹 Genel IP          : %s\n", res.PublicIP)
+			}
+
+			// Private IP
+			if res.PrivateIP != "" {
+				fmt.Printf("    🔹 Özel IP           : %s\n", res.PrivateIP)
+			}
+
+			// IP (Kubernetes, Docker için)
+			if res.IP != "" {
+				fmt.Printf("    🔹 IP Adresi         : %s\n", res.IP)
+			}
+
+			// Port
+			if res.Port > 0 {
+				fmt.Printf("    🔹 Port              : %d\n", res.Port)
+			}
+
+			// Services
+			if len(res.Services) > 0 {
+				fmt.Printf("    🔹 Servisler         : ")
+				for i, svc := range res.Services {
+					if i > 0 {
+						fmt.Print(", ")
+					}
+					fmt.Print(svc)
+				}
+				fmt.Println()
+			}
+
+			// Tags
+			if len(res.Tags) > 0 {
+				fmt.Printf("    🔹 Etiketler/Labels  :\n")
+				for key, value := range res.Tags {
+					fmt.Printf("       • %s = %s\n", key, value)
+				}
+			}
+
+			// Last Checked
+			if !res.LastChecked.IsZero() {
+				fmt.Printf("    🔹 Son Kontrol       : %s\n", res.LastChecked.Format("2006-01-02 15:04:05"))
+			}
+
+			fmt.Println()
+		}
+	}
+
+	// Genel Özet
+	fmt.Println()
+	fmt.Println("┌─────────────────────────────────────────────────────────────────┐")
+	fmt.Println("│ 📊 GENEL ÖZET")
+	fmt.Println("└─────────────────────────────────────────────────────────────────┘")
+	fmt.Println()
+
+	fmt.Printf("  ✅ Toplam Kaynak      : %d\n", totalResources)
+	fmt.Printf("  🟢 Çalışan             : %d\n", countByStatusAll(allResources, "running"))
+	fmt.Printf("  🔴 Durdurulmuş         : %d\n", countByStatusAll(allResources, "stopped"))
+	fmt.Println()
+
+	// JSON çıktısı
+	fmt.Println("┌─────────────────────────────────────────────────────────────────┐")
+	fmt.Println("│ 📄 JSON FORMAT DETAYLI ÇIKTI")
+	fmt.Println("└─────────────────────────────────────────────────────────────────┘")
+	fmt.Println()
+
+	result := CloudScanResult{
+		Timestamp: time.Now().Format(time.RFC3339),
+		Provider:  "all",
+		Resources: allResources,
+		Summary: map[string]int{
+			"total":    len(allResources),
+			"running":  countByStatusAll(allResources, "running"),
+			"stopped":  countByStatusAll(allResources, "stopped"),
+		},
+	}
+
+	jsonData, _ := json.MarshalIndent(result, "", "  ")
+	fmt.Println(string(jsonData))
+
+	// Dosyaya kaydet
+	ioutil.WriteFile(".localla_cloud_all.json", jsonData, 0644)
+	fmt.Println()
+	fmt.Println("💾 Sonuçlar .localla_cloud_all.json dosyasına kaydedildi")
+	fmt.Println()
+}
+
+func countByStatusAll(resources []CloudResource, status string) int {
+	count := 0
+	for _, r := range resources {
+		if r.Status == status {
+			count++
+		}
+	}
+	return count
 }

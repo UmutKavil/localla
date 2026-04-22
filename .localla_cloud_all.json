@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-22T18:31:33+03:00",
+  "timestamp": "2026-04-22T18:37:43+03:00",
   "provider": "all",
   "resources": [
     {
@@ -21,7 +21,7 @@
         "Environment": "production",
         "Team": "backend"
       },
-      "last_checked": "2026-04-22T18:31:33.787676+03:00"
+      "last_checked": "2026-04-22T18:37:43.492737+03:00"
     },
     {
       "id": "i-0987654321fedcba0",
@@ -41,7 +41,7 @@
         "Environment": "production",
         "Team": "data"
       },
-      "last_checked": "2026-04-22T18:31:33.787676+03:00"
+      "last_checked": "2026-04-22T18:37:43.492737+03:00"
     },
     {
       "id": "i-1111111111111111a",
@@ -58,7 +58,7 @@
       "tags": {
         "Environment": "staging"
       },
-      "last_checked": "2026-04-22T18:31:33.787676+03:00"
+      "last_checked": "2026-04-22T18:37:43.492737+03:00"
     },
     {
       "id": "vm-001",
@@ -78,7 +78,7 @@
       "tags": {
         "Environment": "production"
       },
-      "last_checked": "2026-04-22T18:31:33.787681+03:00"
+      "last_checked": "2026-04-22T18:37:43.492738+03:00"
     },
     {
       "id": "vm-002",
@@ -95,7 +95,7 @@
         "redis"
       ],
       "tags": null,
-      "last_checked": "2026-04-22T18:31:33.787681+03:00"
+      "last_checked": "2026-04-22T18:37:43.492738+03:00"
     },
     {
       "id": "pod-nginx-12345",
@@ -115,7 +115,7 @@
         "app": "web",
         "namespace": "production"
       },
-      "last_checked": "2026-04-22T18:31:33.787684+03:00"
+      "last_checked": "2026-04-22T18:37:43.492739+03:00"
     },
     {
       "id": "pod-api-67890",
@@ -136,7 +136,7 @@
         "app": "api",
         "namespace": "production"
       },
-      "last_checked": "2026-04-22T18:31:33.787684+03:00"
+      "last_checked": "2026-04-22T18:37:43.492739+03:00"
     },
     {
       "id": "pod-db-11111",
@@ -156,7 +156,7 @@
         "app": "database",
         "namespace": "production"
       },
-      "last_checked": "2026-04-22T18:31:33.787684+03:00"
+      "last_checked": "2026-04-22T18:37:43.49274+03:00"
     },
     {
       "id": "a1b2c3d4e5f6",
@@ -175,7 +175,7 @@
       "tags": {
         "compose_service": "web"
       },
-      "last_checked": "2026-04-22T18:31:33.787688+03:00"
+      "last_checked": "2026-04-22T18:37:43.492742+03:00"
     },
     {
       "id": "f6e5d4c3b2a1",
@@ -194,7 +194,7 @@
       "tags": {
         "compose_service": "api"
       },
-      "last_checked": "2026-04-22T18:31:33.787688+03:00"
+      "last_checked": "2026-04-22T18:37:43.492742+03:00"
     },
     {
       "id": "c3b2a1f6e5d4",
@@ -211,7 +211,7 @@
         "postgresql"
       ],
       "tags": null,
-      "last_checked": "2026-04-22T18:31:33.787689+03:00"
+      "last_checked": "2026-04-22T18:37:43.492742+03:00"
     },
     {
       "id": "svc-auth-001",
@@ -232,7 +232,7 @@
         "language": "go",
         "version": "v2.1.0"
       },
-      "last_checked": "2026-04-22T18:31:33.787692+03:00"
+      "last_checked": "2026-04-22T18:37:43.492743+03:00"
     },
     {
       "id": "svc-payment-001",
@@ -253,7 +253,7 @@
         "language": "python",
         "version": "v1.5.0"
       },
-      "last_checked": "2026-04-22T18:31:33.787692+03:00"
+      "last_checked": "2026-04-22T18:37:43.492743+03:00"
     },
     {
       "id": "svc-notification-001",
@@ -274,7 +274,7 @@
         "language": "nodejs",
         "version": "v3.0.0"
       },
-      "last_checked": "2026-04-22T18:31:33.787692+03:00"
+      "last_checked": "2026-04-22T18:37:43.492743+03:00"
     }
   ],
   "summary": {
