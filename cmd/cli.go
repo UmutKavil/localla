@@ -40,27 +40,49 @@ type ScanResult struct {
 
 func PrintHelp() {
 	help := `
-Localla - Local Ağ Tarama Aracı
+Localla - Local Ağ & Bulut Tarama Aracı
 
 Kullanım:
   localla <komut> [argümanlar]
 
-Komutlar:
+📡 LOCAL NETWORK (Yerel Ağ):
   scan          - Ağdaki tüm cihazları tara
   ports <IP>    - Belirli IP adresinde açık portları tara
   list          - Bulunmuş tüm servisleri listele
   history       - Tüm tarama geçmişini göster
   compare       - IP değişikliklerini ve cihaz değişimlerini göster
+
+☁️  CLOUD (Bulut Kaynakları):
+  cloud <provider>   - Bulut kaynaklarını tara
+  cloud-list         - Kaydedilen bulut kaynaklarını listele
+  
+  Desteklenen sağlayıcılar:
+    • aws            - Amazon Web Services (EC2)
+    • azure          - Microsoft Azure (VM)
+    • kubernetes     - Kubernetes (Pod'lar)
+    • docker         - Docker (Container'lar)
+    • microservices  - Microservices (Servisler)
+
+🎮 DEMO & YARDIM:
   demo          - Demo modunu çalıştır (örnek sonuçları göster)
   help          - Bu yardım mesajını göster
 
-Örnekler:
-  localla scan              # Tüm ağı tara
-  localla ports 192.168.1.1 # Belirli cihazı tara
-  localla list              # Bulunan servisleri listele
-  localla history           # Tarama geçmişini göster
-  localla compare           # IP değişikliklerini göster
-  localla demo              # Demo modunu göster
+📌 ÖRNEKLER:
+  Yerel Ağ:
+    localla scan                    # Tüm ağı tara
+    localla ports 192.168.1.1       # Belirli cihazı tara
+    localla list                    # Bulunan servisleri listele
+    localla history                 # Tarama geçmişini göster
+    localla compare                 # IP değişikliklerini göster
+    localla demo                    # Demo modunu göster
+
+  Bulut:
+    localla cloud aws               # AWS instance'larını tara
+    localla cloud kubernetes        # K8s pod'larını tara
+    localla cloud docker            # Docker container'larını tara
+    localla cloud azure             # Azure VM'lerini tara
+    localla cloud microservices     # Microservices'i tara
+    localla cloud-list              # Bulut kaynaklarını listele
 `
 	fmt.Println(help)
 }

@@ -1,0 +1,67 @@
+{
+  "timestamp": "2026-04-22T18:25:21+03:00",
+  "provider": "docker",
+  "resources": [
+    {
+      "id": "a1b2c3d4e5f6",
+      "name": "web-app",
+      "provider": "Docker",
+      "type": "Container",
+      "region": "local",
+      "status": "running",
+      "ip": "172.17.0.2",
+      "private_ip": "",
+      "public_ip": "",
+      "port": 8080,
+      "services": [
+        "nginx"
+      ],
+      "tags": {
+        "compose_service": "web"
+      },
+      "last_checked": "2026-04-22T18:25:21.05803+03:00"
+    },
+    {
+      "id": "f6e5d4c3b2a1",
+      "name": "api-service",
+      "provider": "Docker",
+      "type": "Container",
+      "region": "local",
+      "status": "running",
+      "ip": "172.17.0.3",
+      "private_ip": "",
+      "public_ip": "",
+      "port": 3000,
+      "services": [
+        "nodejs"
+      ],
+      "tags": {
+        "compose_service": "api"
+      },
+      "last_checked": "2026-04-22T18:25:21.05803+03:00"
+    },
+    {
+      "id": "c3b2a1f6e5d4",
+      "name": "database",
+      "provider": "Docker",
+      "type": "Container",
+      "region": "local",
+      "status": "running",
+      "ip": "172.17.0.4",
+      "private_ip": "",
+      "public_ip": "",
+      "port": 5432,
+      "services": [
+        "postgresql"
+      ],
+      "tags": null,
+      "last_checked": "2026-04-22T18:25:21.05803+03:00"
+    }
+  ],
+  "summary": {
+    "running": 3,
+    "services": 3,
+    "stopped": 0,
+    "total": 3
+  }
+}

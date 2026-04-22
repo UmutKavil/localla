@@ -30,6 +30,15 @@ func main() {
 		cmd.ShowHistory()
 	case "compare":
 		cmd.CompareScans()
+	case "cloud":
+		if len(os.Args) < 3 {
+			fmt.Println("Kullanım: localla cloud <provider>")
+			fmt.Println("Sağlayıcılar: aws, azure, kubernetes, docker, microservices")
+			return
+		}
+		cmd.CloudScan(os.Args[2])
+	case "cloud-list":
+		cmd.CloudList()
 	case "demo":
 		cmd.DemoMode()
 	case "help":
