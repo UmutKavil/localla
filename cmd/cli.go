@@ -312,22 +312,20 @@ func isPortOpen(ip string, port int) bool {
 }
 
 func isHostAlive(ip string) bool {
-	conn, err := net.DialTimeout("tcp", ip+":22", 1*time.Second)
+	// ICMP ping dene (daha hızlı ve güvenilir)
+	_, err := net.DialTimeout("ip4:icmp", ip, 2*time.Second)
 	if err == nil {
-		conn.Close()
 		return true
 	}
 
-	conn, err = net.DialTimeout("tcp", ip+":80", 1*time.Second)
-	if err == nil {
-		conn.Close()
-		return true
-	}
-
-	conn, err = net.DialTimeout("tcp", ip+":443", 1*time.Second)
-	if err == nil {
-		conn.Close()
-		return true
+	// Yaygın portlara bağlanmayı dene
+	commonPorts := []int{22, 80, 443, 3306, 5432, 5900, 8080, 8443, 9200}
+	for _, port := range commonPorts {
+		conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", ip, port), 500*time.Millisecond)
+		if err == nil {
+			conn.Close()
+			return true
+		}
 	}
 
 	return false
